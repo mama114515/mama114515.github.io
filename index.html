@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>卓加新 - 购物新体验</title>
+  <!-- Tailwind CSS v3 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <!-- 统一的 Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF4500',
+            secondary: '#FF6B00',
+            accent: '#FF8C00',
+            neutral: '#F5F5F5',
+            'text-dark': '#333333',
+            'text-medium': '#666666',
+            'text-light': '#999999'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-in-out',
+            'slide-up': 'slideUp 0.5s ease-in-out',
+            'slide-down': 'slideDown 0.5s ease-in-out',
+            'pulse-light': 'pulseLight 2s infinite',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            slideUp: {
+              '0%': { transform: 'translateY(20px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' },
+            },
+            slideDown: {
+              '0%': { transform: 'translateY(-20px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' },
+            },
+            pulseLight: {
+              '0%, 100%': { opacity: '1' },
+              '50%': { opacity: '0.7' },
+            },
+          },
+        }
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .card-hover {
+        @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+      }
+      .btn-primary {
+        @apply bg-primary text-white py-3 px-6 rounded-full font-medium shadow-md hover:bg-secondary transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50;
+      }
+      .btn-secondary {
+        @apply bg-white text-primary py-3 px-6 rounded-full font-medium shadow-md border border-primary hover:bg-neutral transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50;
+      }
+      .input-primary {
+        @apply w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300;
+      }
+      .badge {
+        @apply absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center;
+      }
+      .toast {
+        @apply fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300;
+      }
+      .toast.show {
+        @apply transform translate-x-0;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 font-sans">
+  <!-- 登录页面 -->
+  <div id="login-page" class="min-h-screen flex flex-col items-center justify-center p-4 bg-white">
+    <div class="w-full max-w-md animate-fade-in">
+      <div class="text-center mb-10">
+        <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/fbbccb1c376a41ccacc74f3dd910f77c~tplv-a9rns2rl98-image.image?rcl=20251101122755CA86E174092A778CE84D&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1764563314&x-signature=02eyW41iuIbi6RlXFbhMLjqPSOg%3D" alt="卓加新" class="h-24 mx-auto mb-4">
+        <h1 class="text-2xl font-bold text-text-dark">欢迎使用卓加新</h1>
+        <p class="text-text-light text-sm mt-2">您的一站式购物平台</p>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+        <div class="mb-4">
+          <label for="phone" class="block text-text-medium text-sm font-medium mb-2">手机号码</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-text-light">+86</span>
+            <input type="tel" id="phone" class="input-primary pl-10" placeholder="请输入手机号码" maxlength="11">
+          </div>
+        </div>
+        
+        <div class="mb-6">
+          <label for="password" class="block text-text-medium text-sm font-medium mb-2">密码</label>
+          <input type="password" id="password" class="input-primary" placeholder="请输入密码">
+        </div>
+        
+        <button id="login-btn" class="btn-primary w-full mb-4">登录</button>
+        
+        <div class="flex justify-between items-center text-sm">
+          <div class="flex items-center">
+            <input type="checkbox" id="remember" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+            <label for="remember" class="ml-2 text-text-medium">记住我</label>
+          </div>
+          <a href="#" class="text-primary">忘记密码？</a>
+        </div>
+      </div>
+      
+      <div class="text-center">
+        <p class="text-text-light text-sm mb-4">其他登录方式</p>
+        <div class="flex justify-center space-x-6">
+          <button class="flex flex-col items-center text-text-medium hover:text-primary transition-colors">
+            <i class="fa fa-mobile text-2xl mb-1"></i>
+            <span class="text-xs">手机验证码</span>
+          </button>
+          <button class="flex flex-col items-center text-text-medium hover:text-primary transition-colors">
+            <i class="fa fa-qq text-2xl mb-1"></i>
+            <span class="text-xs">QQ登录</span>
+          </button>
+          <button class="flex flex-col items-center text-text-medium hover:text-primary transition-colors">
+            <i class="fa fa-weixin text-2xl mb-1"></i>
+            <span class="text-xs">微信登录</span>
+          </button>
+        </div>
+      </div>
+      
+      <div class="mt-8 text-center text-text-light text-sm">
+        <p>注册即表示您同意<a href="#" class="text-primary">《用户协议》</a>和<a href="#" class="text-primary">《隐私政策》</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 商品展示页面 -->
+  <div id="shop-page" class="min-h-screen bg-gray-50 hidden">
+    <!-- 顶部导航栏 -->
+    <header class="bg-white shadow-sm sticky top-0 z-40">
+      <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center">
+          <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/fbbccb1c376a41ccacc74f3dd910f77c~tplv-a9rns2rl98-image.image?rcl=20251101122755CA86E174092A778CE84D&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1764563314&x-signature=02eyW41iuIbi6RlXFbhMLjqPSOg%3D" alt="卓加新" class="h-8 mr-2">
+          <h1 class="text-lg font-bold text-text-dark">卓加新</h1>
+        </div>
+        
+        <div class="relative flex-1 max-w-md mx-4">
+          <input type="text" class="w-full py-2 px-4 pr-10 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="搜索商品">
+          <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-text-light">
+            <i class="fa fa-search"></i>
+          </button>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+          <button class="text-text-medium hover:text-primary transition-colors">
+            <i class="fa fa-bell-o text-xl"></i>
+          </button>
+          <div class="relative">
+            <button id="cart-btn" class="text-text-medium hover:text-primary transition-colors">
+              <i class="fa fa-shopping-cart text-xl"></i>
+              <span id="cart-count" class="badge">0</span>
+            </button>
+          </div>
+          <button class="text-text-medium hover:text-primary transition-colors">
+            <i class="fa fa-user-o text-xl"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- 分类导航 -->
+      <div class="container mx-auto px-4 py-2 overflow-x-auto">
+        <div class="flex space-x-6 min-w-max">
+          <a href="#" class="text-primary font-medium py-2 border-b-2 border-primary">推荐</a>
+          <a href="#" class="text-text-medium hover:text-primary py-2 border-b-2 border-transparent">手机</a>
+          <a href="#" class="text-text-medium hover:text-primary py-2 border-b-2 border-transparent">家电</a>
+          <a href="#" class="text-text-medium hover:text-primary py-2 border-b-2 border-transparent">服装</a>
+          <a href="#" class="text-text-medium hover:text-primary py-2 border-b-2 border-transparent">美妆</a>
+          <a href="#" class="text-text-medium hover:text-primary py-2 border-b-2 border-transparent">食品</a>
+          <a href="#" class="text-text-medium hover:text-primary py-2 border-b-2 border-transparent">家居</a>
+          <a href="#" class="text-text-medium hover:text-primary py-2 border-b-2 border-transparent">运动</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="container mx-auto px-4 py-6">
+      <!-- 轮播图 -->
+      <div class="relative rounded-xl overflow-hidden mb-6">
+        <div class="swiper-container h-48 md:h-64 rounded-xl overflow-hidden">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide">
+              <img src="https://p26-doubao-search-sign.byteimg.com/tos-cn-i-be4g95zd3a/901965792472465412~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1777523303&x-signature=D%2FVgvOQVbPTXKlIb3NbQ5rBHm7M%3D" alt="促销活动" class="w-full h-full object-cover">
+            </div>
+            <div class="swiper-slide">
+              <img src="https://p26-doubao-search-sign.byteimg.com/tos-cn-i-be4g95zd3a/930659987931136011~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1777523302&x-signature=O12kXr2QfM0pdLNFPLsda4A6Nk4%3D" alt="促销活动" class="w-full h-full object-cover">
+            </div>
+            <div class="swiper-slide">
+              <img src="https://p11-doubao-search-sign.byteimg.com/labis/3c49e3f666af5ff138b0edb51041fd34~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1777523302&x-signature=IxgRN%2Bgz9zwL9ILcLqfzQ8TLLec%3D" alt="促销活动" class="w-full h-full object-cover">
+            </div>
+          </div>
+          <div class="absolute bottom-3 left-0 right-0 flex justify-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-white opacity-50"></span>
+            <span class="w-2 h-2 rounded-full bg-white opacity-100"></span>
+            <span class="w-2 h-2 rounded-full bg-white opacity-50"></span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 快捷入口 -->
+      <div class="grid grid-cols-5 gap-4 mb-8">
+        <a href="#" class="flex flex-col items-center">
+          <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-primary mb-2">
+            <i class="fa fa-mobile text-xl"></i>
+          </div>
+          <span class="text-xs text-text-medium">手机</span>
+        </a>
+        <a href="#" class="flex flex-col items-center">
+          <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 mb-2">
+            <i class="fa fa-tv text-xl"></i>
+          </div>
+          <span class="text-xs text-text-medium">家电</span>
+        </a>
+        <a href="#" class="flex flex-col items-center">
+          <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-500 mb-2">
+            <i class="fa fa-shopping-bag text-xl"></i>
+          </div>
+          <span class="text-xs text-text-medium">服装</span>
+        </a>
+        <a href="#" class="flex flex-col items-center">
+          <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-500 mb-2">
+            <i class="fa fa-heart text-xl"></i>
+          </div>
+          <span class="text-xs text-text-medium">美妆</span>
+        </a>
+        <a href="#" class="flex flex-col items-center">
+          <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-500 mb-2">
+            <i class="fa fa-cutlery text-xl"></i>
+          </div>
+          <span class="text-xs text-text-medium">食品</span>
+        </a>
+      </div>
+      
+      <!-- 商品分类标题 -->
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-bold text-text-dark">热卖商品</h2>
+        <a href="#" class="text-text-light text-sm">查看更多 <i class="fa fa-angle-right"></i></a>
+      </div>
+      
+      <!-- 商品列表 -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <!-- 商品项 1 -->
+        <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover">
+          <div class="relative">
+            <img src="https://p26-doubao-search-sign.byteimg.com/labis/image/b63360111800f0425311e64ee9ef2cec~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1777523302&x-signature=YJ40QiwWuGEiYOyU3dJAmm62FJI%3D" alt="手机" class="w-full h-40 object-cover">
+            <span class="absolute top-2 left-2 bg-primary text-white text-xs px-2 py-1 rounded">热卖</span>
+          </div>
+          <div class="p-3">
+            <h3 class="text-text-dark font-medium text-sm line-clamp-2 mb-1">6.5英寸全面屏智能手机 全网通4G</h3>
+            <div class="flex items-center justify-between">
+              <span class="text-primary font-bold">¥999</span>
+              <button class="add-to-cart bg-primary text-white text-xs px-2 py-1 rounded-full" data-id="1" data-name="6.5英寸全面屏智能手机" data-price="999" data-image="https://p26-doubao-search-sign.byteimg.com/labis/image/b63360111800f0425311e64ee9ef2cec~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1777523302&x-signature=YJ40QiwWuGEiYOyU3dJAmm62FJI%3D">
+                加入购物车
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 商品项 2 -->
+        <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover">
+          <div class="relative">
+            <img src="https://p11-doubao-search-sign.byteimg.com/labis/f06e785ecf166ff6e846e85286dba1fe~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1777523302&x-signature=JjC467n1wagKHT0974fr3thEW50%3D" alt="抱枕" class="w-full h-40 object-cover">
+            <span class="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded">新品</span>
+          </div>
+          <div class="p-3">
+            <h3 class="text-text-dark font-medium text-sm line-clamp-2 mb-1">北欧风格抱枕套 沙发靠垫 家居装饰</h3>
+            <div class="flex items-center justify-between">
+              <span class="text-primary font-bold">¥29.9</span>
+              <button class="add-to-cart bg-primary text-white text-xs px-2 py-1 rounded-full" data-id="2" data-name="北欧风格抱枕套" data-price="29.9" data-image="https://p11-doubao-search-sign.byteimg.com/labis/f06e785ecf166ff6e846e85286dba1fe~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1777523302&x-signature=JjC467n1wagKHT0974fr3thEW50%3D">
+                加入购物车
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 商品项 3 -->
+        <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover">
+          <div class="relative">
+            <img src="https://p26-doubao-search-sign.byteimg.com/tos-cn-i-be4g95zd3a/901965792472465412~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1777523303&x-signature=D%2FVgvOQVbPTXKlIb3NbQ5rBHm7M%3D" alt="零食" class="w-full h-40 object-cover">
+            <span class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">限时</span>
+          </div>
+          <div class="p-3">
+            <h3 class="text-text-dark font-medium text-sm line-clamp-2 mb-1">爆浆曲奇小丸子 草莓味零食 网红爆款</h3>
+            <div class="flex items-center justify-between">
+              <span class="text-primary font-bold">¥19.9</span>
+              <button class="add-to-cart bg-primary text-white text-xs px-2 py-1 rounded-full" data-id="3" data-name="爆浆曲奇小丸子" data-price="19.9" data-image="https://p26-doubao-search-sign.byteimg.com/tos-cn-i-be4g95zd3a/901965792472465412~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1777523303&x-signature=D%2FVgvOQVbPTXKlIb3NbQ5rBHm7M%3D">
+                加入购物车
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 商品项 4 -->
+        <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover">
+          <div class="relative">
+            <img src="https://p26-doubao-search-sign.byteimg.com/tos-cn-i-be4g95zd3a/957617590678716473~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1777523303&x-signature=Or%2BNxoG0toO%2B3di00TUD5UJYRqk%3D" alt="零食" class="w-full h-40 object-cover">
+          </div>
+          <div class="p-3">
+            <h3 class="text-text-dark font-medium text-sm line-clamp-2 mb-1">鲜虾片膨化食品 休闲零食大礼包</h3>
+            <div class="flex items-center justify-between">
+              <span class="text-primary font-bold">¥15.8</span>
+              <button class="add-to-cart bg-primary text-white text-xs px-2 py-1 rounded-full" data-id="4" data-name="鲜虾片膨化食品" data-price="15.8" data-image="https://p26-doubao-search-sign.byteimg.com/tos-cn-i-be4g95zd3a/957617590678716473~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1777523303&x-signature=Or%2BNxoG0toO%2B3di00TUD5UJYRqk%3D">
+                加入购物车
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 商品分类标题 -->
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-bold text-text-dark">猜你喜欢</h2>
+        <a href="#" class="text-text-light text-sm">换一批 <i class="fa fa-refresh"></i></a>
+      </div>
+      
+      <!-- 商品列表 -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <!-- 商品项 5 -->
+        <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover">
+          <div class="relative">
+            <img src="https://p26-doubao-search-sign.byteimg.com/labis/c93b1fab234b5fc8f17cf028caf89219~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1777523302&x-signature=HWD3KdCQfX1PRUcK7XuBVk4edac%3D" alt="手机" class="w-full h-40 object-cover">
+          </div>
+          <div class="p-3">
+            <h3 class="text-text-dark font-medium text-sm line-clamp-2 mb-1">5.5英寸高清全面屏 智能手机</h3>
+            <div class="flex items-center justify-between">
+              <span class="text-primary font-bold">¥799</span>
+              <button class="add-to-cart bg-primary text-white text-xs px-2 py-1 rounded-full" data-id="5" data-name="5.5英寸高清全面屏手机" data-price="799" data-image="https://p26-doubao-search-sign.byteimg.com/labis/c93b1fab234b5fc8f17cf028caf89219~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1777523302&x-signature=HWD3KdCQfX1PRUcK7XuBVk4edac%3D">
+                加入购物车
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 商品项 6 -->
+        <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover">
+          <div class="relative">
+            <img src="https://p11-doubao-search-sign.byteimg.com/labis/cf55f46e89101235cc7dffc0a8b03013~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1777523302&x-signature=dCUnpOzsToYCl1Cpqe%2F8G3oJGfE%3D" alt="抱枕" class="w-full h-40 object-cover">
+          </div>
+          <div class="p-3">
+            <h3 class="text-text-dark font-medium text-sm line-clamp-2 mb-1">火龙果图案抱枕套 北欧风格 家居装饰</h3>
+            <div class="flex items-center justify-between">
+              <span class="text-primary font-bold">¥25.9</span>
+              <button class="add-to-cart bg-primary text-white text-xs px-2 py-1 rounded-full" data-id="6" data-name="火龙果图案抱枕套" data-price="25.9" data-image="https://p11-doubao-search-sign.byteimg.com/labis/cf55f46e89101235cc7dffc0a8b03013~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1777523302&x-signature=dCUnpOzsToYCl1Cpqe%2F8G3oJGfE%3D">
+                加入购物车
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 商品项 7 -->
+        <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover">
+          <div class="relative">
+            <img src="https://p3-doubao-search-sign.byteimg.com/labis/249d944c341cb826180e34e290a71b9b~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1777523303&x-signature=sD6dvkP85UbninRCotfrkFVEr8E%3D" alt="零食" class="w-full h-40 object-cover">
+          </div>
+          <div class="p-3">
+            <h3 class="text-text-dark font-medium text-sm line-clamp-2 mb-1">烤土豆楔子 健康零食 休闲食品</h3>
+            <div class="flex items-center justify-between">
+              <span class="text-primary font-bold">¥22.5</span>
+              <button class="add-to-cart bg-primary text-white text-xs px-2 py-1 rounded-full" data-id="7" data-name="烤土豆楔子" data-price="22.5" data-image="https://p3-doubao-search-sign.byteimg.com/labis/249d944c341cb826180e34e290a71b9b~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1777523303&x-signature=sD6dvkP85UbninRCotfrkFVEr8E%3D">
+                加入购物车
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 商品项 8 -->
+        <div class="bg-white rounded-xl overflow-hidden shadow-sm card-hover">
+          <div class="relative">
+            <img src="https://p26-doubao-search-sign.byteimg.com/tos-cn-i-be4g95zd3a/1037826319694561280~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1777523303&x-signature=4QRSjghT63WRoENBXZ1q7J0SCkc%3D" alt="零食" class="w-full h-40 object-cover">
+          </div>
+          <div class="p-3">
+            <h3 class="text-text-dark font-medium text-sm line-clamp-2 mb-1">山楂条 传统休闲食品 开胃零食</h3>
+            <div class="flex items-center justify-between">
+              <span class="text-primary font-bold">¥12.9</span>
+              <button class="add-to-cart bg-primary text-white text-xs px-2 py-1 rounded-full" data-id="8" data-name="山楂条" data-price="12.9" data-image="https://p26-doubao-search-sign.byteimg.com/tos-cn-i-be4g95zd3a/1037826319694561280~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1777523303&x-signature=4QRSjghT63WRoENBXZ1q7J0SCkc%3D">
+                加入购物车
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- 底部导航栏 -->
+    <footer class="fixed bottom-0 left-0 right-0 bg-white shadow-lg z-40">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-around py-2">
+          <a href="#" class="flex flex-col items-center text-primary">
+            <i class="fa fa-home text-xl"></i>
+            <span class="text-xs mt-1">首页</span>
+          </a>
+          <a href="#" class="flex flex-col items-center text-text-light">
+            <i class="fa fa-th-large text-xl"></i>
+            <span class="text-xs mt-1">分类</span>
+          </a>
+          <a href="#" class="flex flex-col items-center text-text-light">
+            <i class="fa fa-fire text-xl"></i>
+            <span class="text-xs mt-1">热卖</span>
+          </a>
+          <a href="#" class="flex flex-col items-center text-text-light">
+            <i class="fa fa-user-o text-xl"></i>
+            <span class="text-xs mt-1">我的</span>
+          </a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- 购物车侧边栏 -->
+  <div id="cart-sidebar" class="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white shadow-xl transform translate-x-full transition-transform duration-300 z-50">
+    <div class="h-full flex flex-col">
+      <div class="p-4 border-b flex justify-between items-center">
+        <h2 class="text-lg font-bold text-text-dark">购物车</h2>
+        <button id="close-cart" class="text-text-medium hover:text-primary">
+          <i class="fa fa-times text-xl"></i>
+        </button>
+      </div>
+      
+      <div id="cart-items" class="flex-1 overflow-y-auto p-4">
+        <!-- 购物车为空状态 -->
+        <div id="empty-cart" class="flex flex-col items-center justify-center h-full">
+          <i class="fa fa-shopping-cart text-4xl text-text-light mb-4"></i>
+          <p class="text-text-light">购物车还是空的</p>
+          <button id="start-shopping" class="btn-primary mt-6">去购物</button>
+        </div>
+        
+        <!-- 购物车商品列表 -->
+        <div id="cart-list" class="hidden">
+          <!-- 购物车商品项会通过JavaScript动态添加 -->
+        </div>
+      </div>
+      
+      <div class="p-4 border-t">
+        <div class="flex justify-between items-center mb-4">
+          <span class="text-text-medium">总计:</span>
+          <span id="cart-total" class="text-xl font-bold text-primary">¥0.00</span>
+        </div>
+        <button id="checkout-btn" class="btn-primary w-full">结算</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 遮罩层 -->
+  <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+
+  <!-- 提示框 -->
+  <div id="toast" class="toast">
+    <span id="toast-message"></span>
+  </div>
+
+  <!-- 结算成功弹窗 -->
+  <div id="success-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md animate-fade-in">
+      <div class="text-center">
+        <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center text-green-500 mx-auto mb-4">
+          <i class="fa fa-check text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-bold text-text-dark mb-2">结算成功</h3>
+        <p class="text-text-medium mb-6">您的订单已提交成功！</p>
+        <div class="flex space-x-4">
+          <button id="view-order" class="btn-secondary flex-1">查看订单</button>
+          <button id="continue-shopping" class="btn-primary flex-1">继续购物</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 购物车数据
+    let cart = [];
+    
+    // DOM元素
+    const loginPage = document.getElementById('login-page');
+    const shopPage = document.getElementById('shop-page');
+    const loginBtn = document.getElementById('login-btn');
+    const cartBtn = document.getElementById('cart-btn');
+    const cartSidebar = document.getElementById('cart-sidebar');
+    const closeCart = document.getElementById('close-cart');
+    const overlay = document.getElementById('overlay');
+    const cartCount = document.getElementById('cart-count');
+    const emptyCart = document.getElementById('empty-cart');
+    const cartList = document.getElementById('cart-list');
+    const cartTotal = document.getElementById('cart-total');
+    const checkoutBtn = document.getElementById('checkout-btn');
+    const startShopping = document.getElementById('start-shopping');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+    const successModal = document.getElementById('success-modal');
+    const viewOrder = document.getElementById('view-order');
+    const continueShopping = document.getElementById('continue-shopping');
+    const phoneInput = document.getElementById('phone');
+    const passwordInput = document.getElementById('password');
+    
+    // 登录功能
+    loginBtn.addEventListener('click', function() {
+      const phone = phoneInput.value.trim();
+      const password = passwordInput.value.trim();
+      
+      if (!phone) {
+        showToast('请输入手机号码');
+        return;
+      }
+      
+      if (!/^1[3-9]\d{9}$/.test(phone)) {
+        showToast('请输入正确的手机号码');
+        return;
+      }
+      
+      if (!password) {
+        showToast('请输入密码');
+        return;
+      }
+      
+      if (password.length < 6) {
+        showToast('密码长度不能少于6位');
+        return;
+      }
+      
+      // 模拟登录成功
+      showToast('登录成功');
+      setTimeout(() => {
+        loginPage.classList.add('hidden');
+        shopPage.classList.remove('hidden');
+      }, 1000);
+    });
+    
+    // 购物车功能
+    cartBtn.addEventListener('click', function() {
+      cartSidebar.classList.remove('translate-x-full');
+      overlay.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      updateCartUI();
+    });
+    
+    closeCart.addEventListener('click', closeCartSidebar);
+    overlay.addEventListener('click', closeCartSidebar);
+    
+    function closeCartSidebar() {
+      cartSidebar.classList.add('translate-x-full');
+      overlay.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+    
+    // 添加商品到购物车
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+      button.addEventListener('click', function() {
+        const id = parseInt(this.dataset.id);
+        const name = this.dataset.name;
+        const price = parseFloat(this.dataset.price);
+        const image = this.dataset.image;
+        
+        // 检查商品是否已在购物车中
+        const existingItem = cart.find(item => item.id === id);
+        
+        if (existingItem) {
+          existingItem.quantity += 1;
+        } else {
+          cart.push({
+            id,
+            name,
+            price,
+            image,
+            quantity: 1
+          });
+        }
+        
+        // 更新购物车UI
+        updateCartUI();
+        
+        // 显示添加成功提示
+        showToast('商品已添加到购物车');
+        
+        // 添加按钮动画效果
+        this.classList.add('bg-green-500');
+        this.innerHTML = '<i class="fa fa-check mr-1"></i> 已添加';
+        
+        setTimeout(() => {
+          this.classList.remove('bg-green-500');
+          this.innerHTML = '加入购物车';
+        }, 1000);
+      });
+    });
+    
+    // 更新购物车UI
+    function updateCartUI() {
+      // 更新购物车数量
+      cartCount.textContent = cart.reduce((total, item) => total + item.quantity, 0);
+      
+      // 更新购物车列表
+      if (cart.length === 0) {
+        emptyCart.classList.remove('hidden');
+        cartList.classList.add('hidden');
+        checkoutBtn.disabled = true;
+        checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      } else {
+        emptyCart.classList.add('hidden');
+        cartList.classList.remove('hidden');
+        checkoutBtn.disabled = false;
+        checkoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        
+        // 清空购物车列表
+        cartList.innerHTML = '';
+        
+        // 添加购物车商品
+        cart.forEach(item => {
+          const cartItem = document.createElement('div');
+          cartItem.className = 'flex items-center py-4 border-b';
+          cartItem.innerHTML = `
+            <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded mr-4">
+            <div class="flex-1">
+              <h4 class="text-text-dark text-sm line-clamp-2">${item.name}</h4>
+              <div class="flex items-center justify-between mt-2">
+                <span class="text-primary font-bold">¥${item.price.toFixed(2)}</span>
+                <div class="flex items-center">
+                  <button class="decrease-quantity w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center" data-id="${item.id}">
+                    <i class="fa fa-minus text-xs"></i>
+                  </button>
+                  <span class="mx-2 text-text-dark">${item.quantity}</span>
+                  <button class="increase-quantity w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center" data-id="${item.id}">
+                    <i class="fa fa-plus text-xs"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <button class="remove-item ml-2 text-text-light hover:text-red-500" data-id="${item.id}">
+              <i class="fa fa-trash-o"></i>
+            </button>
+          `;
+          
+          cartList.appendChild(cartItem);
+        });
+        
+        // 更新购物车总计
+        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        cartTotal.textContent = `¥${total.toFixed(2)}`;
+        
+        // 添加事件监听器
+        document.querySelectorAll('.decrease-quantity').forEach(button => {
+          button.addEventListener('click', function() {
+            const id = parseInt(this.dataset.id);
+            const item = cart.find(item => item.id === id);
+            
+            if (item.quantity > 1) {
+              item.quantity -= 1;
+            } else {
+              cart = cart.filter(item => item.id !== id);
+            }
+            
+            updateCartUI();
+          });
+        });
+        
+        document.querySelectorAll('.increase-quantity').forEach(button => {
+          button.addEventListener('click', function() {
+            const id = parseInt(this.dataset.id);
+            const item = cart.find(item => item.id === id);
+            
+            item.quantity += 1;
+            updateCartUI();
+          });
+        });
+        
+        document.querySelectorAll('.remove-item').forEach(button => {
+          button.addEventListener('click', function() {
+            const id = parseInt(this.dataset.id);
+            cart = cart.filter(item => item.id !== id);
+            
+            updateCartUI();
+            showToast('商品已从购物车移除');
+          });
+        });
+      }
+    }
+    
+    // 结算功能
+    checkoutBtn.addEventListener('click', function() {
+      // 模拟结算过程
+      showToast('正在结算...');
+      
+      setTimeout(() => {
+        // 显示结算成功弹窗
+        successModal.classList.remove('hidden');
+        overlay.classList.remove('hidden');
+        
+        // 清空购物车
+        cart = [];
+        updateCartUI();
+      }, 1500);
+    });
+    
+    // 查看订单按钮
+    viewOrder.addEventListener('click', function() {
+      successModal.classList.add('hidden');
+      overlay.classList.add('hidden');
+      showToast('订单功能即将上线，敬请期待！');
+    });
+    
+    // 继续购物按钮
+    continueShopping.addEventListener('click', function() {
+      successModal.classList.add('hidden');
+      overlay.classList.add('hidden');
+      closeCartSidebar();
+    });
+    
+    // 去购物按钮
+    startShopping.addEventListener('click', closeCartSidebar);
+    
+    // 显示提示框
+    function showToast(message) {
+      toastMessage.textContent = message;
+      toast.classList.add('show');
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+    
+    // 模拟轮播图效果
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.swiper-slide');
+    const dots = document.querySelectorAll('.swiper-container .rounded-full');
+    
+    function showSlide(index) {
+      slides.forEach((slide, i) => {
+        slide.style.display = i === index ? 'block' : 'none';
+      });
+      
+      dots.forEach((dot, i) => {
+        dot.style.opacity = i === index ? '1' : '0.5';
+      });
+      
+      currentSlide = index;
+    }
+    
+    // 初始化轮播图
+    showSlide(0);
+    
+    // 自动轮播
+    setInterval(() => {
+      const nextSlide = (currentSlide + 1) % slides.length;
+      showSlide(nextSlide);
+    }, 3000);
+    
+    // 点击轮播图指示点切换轮播
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        showSlide(index);
+      });
+    });
+    
+    // 初始化购物车UI
+    updateCartUI();
+  </script>
+</body>
+</html>
